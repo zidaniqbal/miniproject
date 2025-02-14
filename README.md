@@ -1,4 +1,4 @@
-# Laravel Role Management System
+# Belajar
 
 ![Laravel](https://img.shields.io/badge/Laravel-10-red?style=for-the-badge&logo=laravel)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-blue?style=for-the-badge&logo=bootstrap)
