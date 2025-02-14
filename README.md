@@ -1,4 +1,4 @@
-# Laravel Role Management System
+# Belajar
 
 ![Laravel](https://img.shields.io/badge/Laravel-10-red?style=for-the-badge&logo=laravel)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-blue?style=for-the-badge&logo=bootstrap)
@@ -105,29 +105,3 @@ npm run build
 php artisan serve
 npm run dev
 ```
-
----
-
-## 📷 Screenshots
-
-Tambahkan beberapa screenshot dari aplikasi Anda di sini untuk menunjukkan antarmuka pengguna.
-
----
-
-## 🤝 Kontribusi
-
-Jika Anda ingin berkontribusi, silakan fork repository ini dan ajukan pull request.
-
----
-
-## 📜 Lisensi
-
-Proyek ini dilindungi oleh lisensi **MIT**.
-
----
-
-## 📬 Kontak
-
-Jika Anda memiliki pertanyaan, silakan hubungi:
-📧 Email: your@email.com  
-🐙 GitHub: [yourgithub](https://github.com/yourgithub)
