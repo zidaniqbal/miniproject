@@ -33,8 +33,8 @@
                 </ul>
                 <div class="d-flex">
                     @guest
-                        <button class="btn btn-login me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-                        <button class="btn btn-register" data-bs-toggle="modal" data-bs-target="#registerModal">Register</button>
+                        <a href="{{ route('login') }}" class="btn btn-login me-2">Login</a>
+                        <a href="{{ route('register') }}" class="btn btn-register">Register</a>
                     @else
                         <a href="{{ auth()->user()->role == 1 ? route('user.dashboard') : route('admin.dashboard') }}" 
                            class="btn btn-primary">Dashboard</a>
@@ -47,19 +47,7 @@
     <!-- Content -->
     @yield('content')
 
-    <!-- Modals -->
-    @yield('modals')
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
-
-    @if($errors->any())
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var modal = new bootstrap.Modal(document.getElementById('{{ old('_form') == 'register' ? 'registerModal' : 'loginModal' }}'));
-            modal.show();
-        });
-    </script>
-    @endif
 </body>
 </html> 

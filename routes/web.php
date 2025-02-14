@@ -1,10 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LandingController;
-use App\Http\Controllers\UserDashboardController;
-use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,26 +19,37 @@ use App\Http\Controllers\AdminDashboardController;
 |
 */
 
-// Landing page (public)
-Route::get('/', [LandingController::class, 'index']);
+// Public routes
+Route::get('/', function () {
+    return view('landing.index');
+})->name('home');
 
-// Authentication routes
-Auth::routes();
-
-// User routes
-Route::middleware(['auth', 'checkRole:1'])->group(function () {
-    Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+// Authentication Routes
+Route::middleware('guest')->group(function () {
+    // Login Routes
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+    
+    // Registration Routes
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
 });
 
-// Admin routes
-Route::middleware(['auth', 'checkRole:2'])->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+// Logout Route
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Protected Routes
+Route::middleware('auth')->group(function () {
+    // Admin Routes
+    Route::middleware('role:2')->prefix('admin')->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/users', [AdminDashboardController::class, 'users'])->name('admin.users');
+        Route::get('/users/data', [AdminDashboardController::class, 'getUsersData'])->name('admin.users.data');
+        Route::post('/users/store', [AdminDashboardController::class, 'store'])->name('admin.users.store');
+    });
+
+    // User Routes
+    Route::middleware('role:1')->prefix('user')->group(function () {
+        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    });
 });
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -71,5 +71,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'responsecache' => \Spatie\ResponseCache\Middlewares\CacheResponse::class,
         'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
+        'role' => \App\Http\Middleware\CheckRole::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 }

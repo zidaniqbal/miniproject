@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -70,5 +72,43 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
             'role' => 1, // Mengubah default role dari 0 menjadi 1 (user)
         ]);
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration successful!',
+                'redirect' => '/dashboard'  // sesuaikan dengan route setelah register
+            ]);
+        }
+
+        return redirect($this->redirectPath());
+    }
+
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 1, // Default role for new users
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('user.dashboard');
     }
 }
