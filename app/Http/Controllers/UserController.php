@@ -146,11 +146,6 @@ class Usercontroller extends Controller
                 default => 'https://berita-indo-api-next.vercel.app/api/cnn-news/nasional'
             };
             
-            Log::info('Fetching news from CNN Indonesia', [
-                'category' => $category,
-                'url' => $baseUrl
-            ]);
-
             $response = Http::get($baseUrl);
             
             if ($response->successful()) {

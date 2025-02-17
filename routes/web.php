@@ -51,6 +51,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
         Route::post('/settings/update-profile', [AdminController::class, 'updateProfile'])->name('admin.settings.updateProfile');
         Route::post('/settings/update-password', [AdminController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+        
+        // Add these new routes for admin news
+        Route::get('/news', [AdminController::class, 'news'])->name('admin.news');
+        Route::get('/get-news', [AdminController::class, 'getNews'])->name('admin.get-news');
     });
 
     // User Routes
@@ -59,5 +63,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/settings', [UserController::class, 'settings'])->name('user.settings');
         Route::post('/settings/update-profile', [UserController::class, 'updateProfile'])->name('user.settings.updateProfile');
         Route::post('/settings/update-password', [UserController::class, 'updatePassword'])->name('user.settings.updatePassword');
+        
+        // Add these new routes for user news
+        Route::get('/news', [UserController::class, 'news'])->name('user.news');
+        Route::get('/get-news', [UserController::class, 'getNews'])->name('user.get-news');
     });
 });
