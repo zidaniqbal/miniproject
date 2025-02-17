@@ -29,8 +29,41 @@
     <!-- Bootstrap CSS and JS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        .sidebar .avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar .avatar i {
+            font-size: 1.5rem;
+        }
+    </style>
 </head>
 <body class="{{ Auth::check() && Auth::user()->role == 2 ? 'admin-theme' : 'user-theme' }}">
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     @auth
         @if(Auth::user()->role >= 1)
             <!-- Mobile Toggle Button -->
@@ -43,7 +76,11 @@
                 <div class="sidebar-header">
                     <div class="profile-info">
                         <div class="avatar">
-                            <i class="bi bi-person-circle text-white"></i>
+                            @if(Auth::user()->profile_image)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            @else
+                                <i class="bi bi-person-circle text-white"></i>
+                            @endif
                         </div>
                         <div class="profile-details">
                             <h6>{{ Auth::user()->name }}</h6>
@@ -71,7 +108,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" data-title="Settings">
+                            <a href="{{ route('admin.settings') }}" data-title="Settings">
                                 <i class="bi bi-gear"></i>
                                 <span>Settings</span>
                             </a>
@@ -190,6 +227,7 @@
         });
     </script>
     @stack('scripts')
+    @yield('cssPage')
     @yield('jsPage')
 </body>
 </html>

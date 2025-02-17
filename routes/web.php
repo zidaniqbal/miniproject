@@ -46,6 +46,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/users', [AdminDashboardController::class, 'users'])->name('admin.users');
         Route::get('/users/data', [AdminDashboardController::class, 'getUsersData'])->name('admin.users.data');
         Route::post('/users/store', [AdminDashboardController::class, 'store'])->name('admin.users.store');
+        Route::get('/users/{user}', [AdminDashboardController::class, 'show'])->name('admin.users.show');
+        Route::put('/users/{user}', [AdminDashboardController::class, 'update'])->name('admin.users.update');
+        Route::delete('/users/{user}', [AdminDashboardController::class, 'destroy'])->name('admin.users.destroy');
+        Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('admin.settings');
+        Route::post('/settings/update-profile', [AdminDashboardController::class, 'updateProfile'])->name('admin.settings.updateProfile');
+        Route::post('/settings/update-password', [AdminDashboardController::class, 'updatePassword'])->name('admin.settings.updatePassword');
     });
 
     // User Routes

@@ -29,11 +29,21 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="password_confirmation" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Register</button>
                     </form>
@@ -46,3 +56,55 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('.toggle-password').click(function() {
+        const passwordInput = $(this).parent().find('input');
+        const icon = $(this).find('i');
+        
+        if (passwordInput.attr('type') === 'password') {
+            passwordInput.attr('type', 'text');
+            icon.removeClass('bi-eye').addClass('bi-eye-slash');
+        } else {
+            passwordInput.attr('type', 'password');
+            icon.removeClass('bi-eye-slash').addClass('bi-eye');
+        }
+    });
+});
+</script>
+
+<style>
+.input-group .toggle-password {
+    border: none;
+    background-color: white;
+    color: #6c757d;
+    transition: all 0.2s ease;
+}
+
+.input-group .toggle-password:hover {
+    color: #4F46E5;
+    background-color: #f8fafc;
+}
+
+.input-group input:focus + .toggle-password {
+    border: none;
+    outline: none;
+}
+
+.input-group {
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+}
+
+.input-group input {
+    border: none !important;
+}
+
+.input-group input:focus {
+    outline: none;
+    box-shadow: none;
+}
+</style>
+@endpush
