@@ -3,10 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\User\DashboardController as UserDashboardController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\LandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,9 +19,9 @@ use App\Http\Controllers\Admin\UserController;
 */
 
 // Public routes
-Route::get('/', function () {
-    return view('landing.index');
-})->name('home');
+Route::get('/', [LandingController::class, 'index'])->name('home');
+Route::get('/news', [LandingController::class, 'news'])->name('news');
+Route::get('/get-news', [LandingController::class, 'getNews'])->name('get-news');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -42,23 +41,23 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     // Admin Routes
     Route::middleware('role:2')->prefix('admin')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('/users', [AdminDashboardController::class, 'users'])->name('admin.users');
-        Route::get('/users/data', [AdminDashboardController::class, 'getUsersData'])->name('admin.users.data');
-        Route::post('/users/store', [AdminDashboardController::class, 'store'])->name('admin.users.store');
-        Route::get('/users/{user}', [AdminDashboardController::class, 'show'])->name('admin.users.show');
-        Route::put('/users/{user}', [AdminDashboardController::class, 'update'])->name('admin.users.update');
-        Route::delete('/users/{user}', [AdminDashboardController::class, 'destroy'])->name('admin.users.destroy');
-        Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('admin.settings');
-        Route::post('/settings/update-profile', [AdminDashboardController::class, 'updateProfile'])->name('admin.settings.updateProfile');
-        Route::post('/settings/update-password', [AdminDashboardController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/users/data', [AdminController::class, 'getUsersData'])->name('admin.users.data');
+        Route::post('/users/store', [AdminController::class, 'store'])->name('admin.users.store');
+        Route::get('/users/{user}', [AdminController::class, 'show'])->name('admin.users.show');
+        Route::put('/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
+        Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+        Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
+        Route::post('/settings/update-profile', [AdminController::class, 'updateProfile'])->name('admin.settings.updateProfile');
+        Route::post('/settings/update-password', [AdminController::class, 'updatePassword'])->name('admin.settings.updatePassword');
     });
 
     // User Routes
     Route::middleware('role:1')->prefix('user')->group(function () {
-        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
-        Route::get('/settings', [UserDashboardController::class, 'settings'])->name('user.settings');
-        Route::post('/settings/update-profile', [UserDashboardController::class, 'updateProfile'])->name('user.settings.updateProfile');
-        Route::post('/settings/update-password', [UserDashboardController::class, 'updatePassword'])->name('user.settings.updatePassword');
+        Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+        Route::get('/settings', [UserController::class, 'settings'])->name('user.settings');
+        Route::post('/settings/update-profile', [UserController::class, 'updateProfile'])->name('user.settings.updateProfile');
+        Route::post('/settings/update-password', [UserController::class, 'updatePassword'])->name('user.settings.updatePassword');
     });
 });

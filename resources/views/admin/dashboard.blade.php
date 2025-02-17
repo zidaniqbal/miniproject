@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="page-header">
-        <h1 class="page-title">Dashboard</h1>
+        <h1 class="page-title">Dasbor Admin</h1>
     </div>
 
     <!-- Dashboard Content Wrapper -->
@@ -15,11 +15,11 @@
                 <div class="settings-card bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-0">Total Users</h6>
+                            <h6 class="card-title mb-0">Total Pengguna</h6>
                             <h2 class="my-2">{{ \App\Models\User::where('role', 1)->count() }}</h2>
                             <p class="mb-0 small">
                                 <i class="bi bi-arrow-up-short"></i>
-                                {{ \App\Models\User::where('role', 1)->whereMonth('created_at', now()->month)->count() }} this month
+                                {{ \App\Models\User::where('role', 1)->whereMonth('created_at', now()->month)->count() }} bulan ini
                             </p>
                         </div>
                         <i class="bi bi-people-fill display-6"></i>
@@ -31,11 +31,11 @@
                 <div class="settings-card bg-success text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-0">Active Admins</h6>
+                            <h6 class="card-title mb-0">Admin Aktif</h6>
                             <h2 class="my-2">{{ \App\Models\User::where('role', 2)->count() }}</h2>
                             <p class="mb-0 small">
                                 <i class="bi bi-shield-check"></i>
-                                Managing {{ \App\Models\User::count() }} total accounts
+                                Mengelola {{ \App\Models\User::count() }} total akun
                             </p>
                         </div>
                         <i class="bi bi-person-fill-gear display-6"></i>
@@ -47,11 +47,11 @@
                 <div class="settings-card bg-info text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-0">New Users Today</h6>
+                            <h6 class="card-title mb-0">Pengguna Baru Hari Ini</h6>
                             <h2 class="my-2">{{ \App\Models\User::whereDate('created_at', today())->count() }}</h2>
                             <p class="mb-0 small">
                                 <i class="bi bi-clock-history"></i>
-                                {{ \App\Models\User::whereDate('created_at', today()->subDay())->count() }} yesterday
+                                {{ \App\Models\User::whereDate('created_at', today()->subDay())->count() }} kemarin
                             </p>
                         </div>
                         <i class="bi bi-person-plus-fill display-6"></i>
@@ -63,14 +63,14 @@
                 <div class="settings-card bg-warning text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-0">User Growth</h6>
+                            <h6 class="card-title mb-0">Pertumbuhan Pengguna</h6>
                             <h2 class="my-2">
                                 {{ number_format((\App\Models\User::whereMonth('created_at', now()->month)->count() / 
                                    max(\App\Models\User::whereMonth('created_at', now()->subMonth()->month)->count(), 1) - 1) * 100, 1) }}%
                             </h2>
                             <p class="mb-0 small">
                                 <i class="bi bi-graph-up"></i>
-                                Compared to last month
+                                Dibandingkan bulan lalu
                             </p>
                         </div>
                         <i class="bi bi-graph-up-arrow display-6"></i>
@@ -83,13 +83,13 @@
         <div class="row">
             <div class="col-md-8 mb-4">
                 <div class="settings-card">
-                    <h2 class="settings-section-title">User Growth Trends</h2>
+                    <h2 class="settings-section-title">Tren Pertumbuhan Pengguna</h2>
                     <div id="userGrowthChart"></div>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
                 <div class="settings-card">
-                    <h2 class="settings-section-title">User Distribution</h2>
+                    <h2 class="settings-section-title">Distribusi Pengguna</h2>
                     <div id="userDistributionChart"></div>
                 </div>
             </div>
@@ -99,15 +99,15 @@
         <div class="row">
             <div class="col-md-8 mb-4">
                 <div class="settings-card">
-                    <h2 class="settings-section-title">Recent Users</h2>
+                    <h2 class="settings-section-title">Pengguna Terbaru</h2>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
+                                    <th>Nama</th>
                                     <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Joined</th>
+                                    <th>Peran</th>
+                                    <th>Bergabung</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,7 +126,7 @@
                                         @if($user->role == 2)
                                             <span class="badge bg-danger">Admin</span>
                                         @else
-                                            <span class="badge bg-success">User</span>
+                                            <span class="badge bg-success">Pengguna</span>
                                         @endif
                                     </td>
                                     <td>{{ $user->created_at->diffForHumans() }}</td>
@@ -139,16 +139,16 @@
             </div>
             <div class="col-md-4 mb-4">
                 <div class="settings-card">
-                    <h2 class="settings-section-title">Quick Actions</h2>
+                    <h2 class="settings-section-title">Aksi Cepat</h2>
                     <div class="d-grid gap-2">
                         <a href="{{ route('admin.users') }}" class="btn btn-primary">
-                            <i class="bi bi-people-fill me-2"></i>Manage Users
+                            <i class="bi bi-people-fill me-2"></i>Kelola Pengguna
                         </a>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                            <i class="bi bi-person-plus-fill me-2"></i>Add New User
+                            <i class="bi bi-person-plus-fill me-2"></i>Tambah Pengguna Baru
                         </button>
                         <button class="btn btn-info text-white">
-                            <i class="bi bi-gear-fill me-2"></i>System Settings
+                            <i class="bi bi-gear-fill me-2"></i>Pengaturan Sistem
                         </button>
                     </div>
                 </div>
@@ -162,14 +162,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="addUserModalLabel">Tambah Pengguna Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <form id="addUserForm">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">Nama</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
@@ -177,20 +177,20 @@
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
+                        <label for="password" class="form-label">Kata Sandi</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Role</label>
+                        <label for="role" class="form-label">Peran</label>
                         <select class="form-select" id="role" name="role" required>
-                            <option value="1">User</option>
+                            <option value="1">Pengguna</option>
                             <option value="2">Admin</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Add User</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-success">Tambah Pengguna</button>
                 </div>
             </form>
         </div>

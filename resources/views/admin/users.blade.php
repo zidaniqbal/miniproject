@@ -390,27 +390,25 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1 class="page-title">User Management</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Manajemen Pengguna</h1>
         <button class="btn btn-primary" id="addUser">
-            <i class="bi bi-plus"></i> Add User
+            <i class="bi bi-person-plus"></i> Tambah Pengguna
         </button>
     </div>
 
-    <!-- Users Content Wrapper -->
-    <div class="settings-wrapper">
-        <div class="settings-card">
+    <div class="card">
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table" id="usersTable">
+                <table id="usersTable" class="table table-hover">
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Name</th>
+                            <th>Nama</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th>Created At</th>
-                            <th>Action</th>
+                            <th>Terdaftar</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                 </table>
@@ -419,27 +417,27 @@
     </div>
 </div>
 
-<!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+<!-- Modal Tambah User -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Tambah Pengguna Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="addUserForm">
                 @csrf
                 <div class="modal-body">
-                    <div class="mb-4">
-                        <label for="name" class="form-label">Name</label>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
+                        <label for="password" class="form-label">Kata Sandi</label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="password" name="password" required>
                             <button class="btn btn-outline-secondary toggle-password" type="button">
@@ -447,7 +445,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label for="role" class="form-label">Role</label>
                         <select class="form-select" id="role" name="role" required>
                             <option value="1">User</option>
@@ -456,45 +454,36 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success px-4">Add User</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary px-4">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+<!-- Modal Edit User -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Edit Pengguna</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="editUserForm">
                 @csrf
                 @method('PUT')
-                <input type="hidden" id="edit_user_id" name="user_id">
+                <input type="hidden" id="edit_user_id">
                 <div class="modal-body">
-                    <div class="mb-4">
-                        <label for="edit_name" class="form-label">Name</label>
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Nama</label>
                         <input type="text" class="form-control" id="edit_name" name="name" required>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label for="edit_email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="edit_email" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="edit_password" name="password" placeholder="Leave blank to keep current password">
-                            <button class="btn btn-outline-secondary toggle-password" type="button">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mb-4">
                         <label for="edit_role" class="form-label">Role</label>
                         <select class="form-select" id="edit_role" name="role" required>
                             <option value="1">User</option>
@@ -503,29 +492,29 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary px-4">Update User</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary px-4">Perbarui</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Hapus Pengguna</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-0">Are you sure you want to delete this user? This action cannot be undone.</p>
+                <p class="mb-0">Apakah Anda yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.</p>
                 <input type="hidden" id="delete_user_id">
             </div>
             <div class="modal-footer border-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger px-4" id="confirmDelete">Delete</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger px-4" id="confirmDelete">Hapus</button>
             </div>
         </div>
     </div>
@@ -536,7 +525,7 @@
     <div id="toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
     </div>
 </div>
@@ -558,8 +547,8 @@ $(document).ready(function() {
         ajax: {
             url: "{{ route('admin.users.data') }}",
             error: function (xhr, error, thrown) {
-                console.error('DataTables Error:', error);
-                alert('Error loading data. Please check console for details.');
+                console.error('Error DataTables:', error);
+                alert('Gagal memuat data. Silakan periksa konsol untuk detail.');
             }
         },
         columns: [
@@ -590,10 +579,21 @@ $(document).ready(function() {
         ],
         order: [[4, 'desc']],
         language: {
-            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>',
-            searchPlaceholder: "Search users...",
+            processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Memuat...</span></div>',
+            searchPlaceholder: "Cari pengguna...",
             search: "",
-            lengthMenu: "_MENU_ per page",
+            lengthMenu: "_MENU_ per halaman",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            zeroRecords: "Tidak ada data yang cocok",
+            emptyTable: "Tidak ada data tersedia",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Selanjutnya",
+                previous: "Sebelumnya"
+            }
         },
         drawCallback: function() {
             $('.dataTables_paginate > .pagination').addClass('pagination-sm');

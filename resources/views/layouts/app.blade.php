@@ -51,6 +51,83 @@
         .sidebar .avatar i {
             font-size: 1.5rem;
         }
+
+        /* Modal Styles - Global */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            padding: 1.5rem 1.5rem 1rem;
+            border: none;
+        }
+
+        .modal-body {
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            border: none;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .btn-close {
+            background-size: 0.8em;
+            opacity: 0.5;
+        }
+
+        /* Modal Button Styles */
+        .modal .btn {
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.625rem 1rem;
+            border-radius: 8px;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .modal .btn-light {
+            background-color: #F3F4F6;
+            border-color: #F3F4F6;
+            color: #374151;
+        }
+
+        .modal .btn-light:hover {
+            background-color: #E5E7EB;
+            border-color: #E5E7EB;
+        }
+
+        .modal .btn-danger {
+            background-color: #DC2626;
+            border-color: #DC2626;
+        }
+
+        .modal .btn-danger:hover {
+            background-color: #B91C1C;
+            border-color: #B91C1C;
+        }
+
+        /* Modal Body Text */
+        .modal-body p {
+            color: #4B5563;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Modal */
+        @media (max-width: 768px) {
+            .modal-dialog {
+                margin: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="{{ Auth::check() && Auth::user()->role == 2 ? 'admin-theme' : 'user-theme' }}">
@@ -108,6 +185,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('admin.news') }}" data-title="News">
+                                <i class="bi bi-newspaper"></i>
+                                <span>Berita</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('admin.settings') }}" data-title="Settings">
                                 <i class="bi bi-gear"></i>
                                 <span>Settings</span>
@@ -122,21 +205,22 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('user.news') }}" data-title="News">
+                                <i class="bi bi-newspaper"></i>
+                                <span>Berita</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('user.settings') }}" data-title="Settings">
                                 <i class="bi bi-gear"></i>
                                 <span>Settings</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="#" data-title="Notifications">
-                                <i class="bi bi-bell"></i>
-                                <span>Notifications</span>
-                            </a>
-                        </li>
                     @endif
                     <li>
-                        <a href="{{ route('logout') }}" 
-                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                        <a href="#" 
+                           data-bs-toggle="modal" 
+                           data-bs-target="#logoutModal"
                            data-title="Logout">
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Logout</span>
@@ -153,6 +237,25 @@
     <!-- Main Content -->
     <div class="{{ Auth::check() && Auth::user()->role >= 1 ? 'main-content' : '' }}">
         @yield('content')
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Apakah Anda yakin ingin keluar? Anda harus login kembali untuk mengakses sistem.</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="document.getElementById('logout-form').submit();">Logout</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

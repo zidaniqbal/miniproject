@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
-class DashboardController extends Controller
+class Admincontroller extends Controller
 {
     public function index()
     {
@@ -365,6 +366,68 @@ class DashboardController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while updating password.'
+            ], 500);
+        }
+    }
+
+    public function news()
+    {
+        return view('admin.news');
+    }
+
+    public function getNews(Request $request)
+    {
+        try {
+            $category = $request->query('category', 'nasional');
+            // Sesuaikan base URL berdasarkan kategori
+            $baseUrl = match($category) {
+                'nasional' => 'https://berita-indo-api-next.vercel.app/api/cnn-news/nasional',
+                'internasional' => 'https://berita-indo-api-next.vercel.app/api/cnn-news/internasional',
+                'ekonomi' => 'https://berita-indo-api-next.vercel.app/api/cnn-news/ekonomi',
+                'olahraga' => 'https://berita-indo-api-next.vercel.app/api/cnn-news/olahraga',
+                'teknologi' => 'https://berita-indo-api-next.vercel.app/api/cnn-news/teknologi',
+                'hiburan' => 'https://berita-indo-api-next.vercel.app/api/cnn-news/hiburan',
+                default => 'https://berita-indo-api-next.vercel.app/api/cnn-news/nasional'
+            };
+            
+            // Log request
+            Log::info('Fetching news from CNN Indonesia', [
+                'url' => $baseUrl
+            ]);
+
+            $response = Http::get($baseUrl);
+            
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                // Transform data structure to match frontend expectations
+                $articles = collect($data['data'])->map(function($article) {
+                    return [
+                        'title' => $article['title'],
+                        'description' => $article['contentSnippet'],
+                        'url' => $article['link'],
+                        'urlToImage' => $article['image']['large'],
+                        'publishedAt' => $article['isoDate'],
+                    ];
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'articles' => $articles
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch news'
+            ], 500);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching news: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching news: ' . $e->getMessage()
             ], 500);
         }
     }

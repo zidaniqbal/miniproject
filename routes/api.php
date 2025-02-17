@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,5 +26,5 @@ Route::middleware(['auth:sanctum', 'checkRole:1'])->group(function () {
 
 // API routes untuk Admin
 Route::middleware(['auth:sanctum', 'checkRole:2'])->group(function () {
-    // Tambahkan route API untuk admin di sini
+    // Route::get('/news', [AdminController::class, 'getNews']);
 });

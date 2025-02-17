@@ -213,20 +213,20 @@
     <div class="container-fluid">
         <!-- Page Header -->
         <div class="page-header">
-            <h1 class="page-title">Profile Settings</h1>
+            <h1 class="page-title">Pengaturan Admin</h1>
         </div>
 
         <!-- Settings Content Wrapper -->
         <div class="settings-wrapper">
             <!-- Profile Information -->
             <div class="settings-card">
-                <h2 class="settings-section-title">Profile Information</h2>
+                <h2 class="settings-section-title">Informasi Profil</h2>
                 <form id="profileForm">
                     @csrf
                     <div class="profile-image-section">
                         <div>
                             @if(Auth::user()->profile_image)
-                                <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Profile" class="profile-image" id="profileImagePreview">
+                                <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Profil" class="profile-image" id="profileImagePreview">
                             @else
                                 <div class="profile-image-placeholder" id="profileImagePlaceholder">
                                     <i class="bi bi-person"></i>
@@ -234,25 +234,25 @@
                             @endif
                             <input type="file" class="d-none" id="profileImage" name="profile_image" accept="image/*">
                             <div class="image-upload-info">
-                                <p class="mb-1">Click on the image to change</p>
-                                <small>Requirements:</small>
+                                <p class="mb-1">Klik pada gambar untuk mengubah</p>
+                                <small>Persyaratan:</small>
                                 <ul class="ps-3 mb-0">
-                                    <li>Maximum file size: 2MB</li>
-                                    <li>Allowed formats: JPG, PNG</li>
-                                    <li>Recommended size: 300x300 pixels</li>
+                                    <li>Ukuran maksimal: 2MB</li>
+                                    <li>Format yang diizinkan: JPG, PNG</li>
+                                    <li>Ukuran yang disarankan: 300x300 piksel</li>
                                 </ul>
                             </div>
                         </div>
                         <div class="flex-grow-1">
                             <div class="mb-3">
-                                <label for="name" class="form-label">Name</label>
+                                <label for="name" class="form-label">Nama</label>
                                 <input type="text" class="form-control" id="name" name="name" value="{{ Auth::user()->name }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" value="{{ Auth::user()->email }}" readonly>
                             </div>
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                            <button type="submit" class="btn btn-primary">Perbarui Profil</button>
                         </div>
                     </div>
                 </form>
@@ -260,11 +260,11 @@
 
             <!-- Change Password -->
             <div class="settings-card">
-                <h2 class="settings-section-title">Change Password</h2>
+                <h2 class="settings-section-title">Ubah Kata Sandi</h2>
                 <form id="passwordForm">
                     @csrf
                     <div class="mb-3">
-                        <label for="current_password" class="form-label">Current Password</label>
+                        <label for="current_password" class="form-label">Kata Sandi Saat Ini</label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="current_password" name="current_password" required>
                             <button class="btn btn-outline-secondary toggle-password" type="button">
@@ -273,7 +273,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="new_password" class="form-label">New Password</label>
+                        <label for="new_password" class="form-label">Kata Sandi Baru</label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="new_password" name="new_password" required>
                             <button class="btn btn-outline-secondary toggle-password" type="button">
@@ -282,7 +282,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
+                        <label for="new_password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required>
                             <button class="btn btn-outline-secondary toggle-password" type="button">
@@ -291,13 +291,30 @@
                         </div>
                     </div>
                     <div class="password-requirements">
-                        <small class="d-block mb-2">Password requirements:</small>
+                        <small class="d-block mb-2">Persyaratan kata sandi:</small>
                         <ul>
-                            <li>Minimum 8 characters</li>
-                            <li>Must be different from current password</li>
+                            <li>Minimal 8 karakter</li>
+                            <li>Harus berbeda dengan kata sandi saat ini</li>
                         </ul>
                     </div>
-                    <button type="submit" class="btn btn-primary">Change Password</button>
+                    <button type="submit" class="btn btn-primary">Ubah Kata Sandi</button>
+                </form>
+            </div>
+
+            <!-- System Settings -->
+            <div class="settings-card">
+                <h2 class="settings-section-title">Pengaturan Sistem</h2>
+                <form id="systemSettingsForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label">Mode Pemeliharaan</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="maintenanceMode">
+                            <label class="form-check-label" for="maintenanceMode">Aktifkan mode pemeliharaan</label>
+                        </div>
+                        <small class="text-muted">Saat diaktifkan, hanya admin yang dapat mengakses situs</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
                 </form>
             </div>
         </div>
@@ -309,7 +326,7 @@
     <div id="toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
         </div>
     </div>
 </div>
