@@ -57,5 +57,8 @@ Route::middleware('auth')->group(function () {
     // User Routes
     Route::middleware('role:1')->prefix('user')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+        Route::get('/settings', [UserDashboardController::class, 'settings'])->name('user.settings');
+        Route::post('/settings/update-profile', [UserDashboardController::class, 'updateProfile'])->name('user.settings.updateProfile');
+        Route::post('/settings/update-password', [UserDashboardController::class, 'updatePassword'])->name('user.settings.updatePassword');
     });
 });

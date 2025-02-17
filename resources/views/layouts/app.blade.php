@@ -122,9 +122,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" data-title="Profile">
-                                <i class="bi bi-person"></i>
-                                <span>Profile</span>
+                            <a href="{{ route('user.settings') }}" data-title="Settings">
+                                <i class="bi bi-gear"></i>
+                                <span>Settings</span>
                             </a>
                         </li>
                         <li>
