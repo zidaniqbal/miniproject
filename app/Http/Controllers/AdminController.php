@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Goal;
 use Carbon\Carbon;
+use App\Models\Visitor;
+use Illuminate\Support\Facades\Cache;
 
 class AdminController extends Controller
 {
@@ -29,7 +31,10 @@ class AdminController extends Controller
         // Data untuk User Distribution Chart
         $userDistributionData = $this->getUserDistributionData();
 
-        return view('admin.dashboard', compact('userGrowthData', 'userDistributionData'));
+        // Add visitor data
+        $visitorData = $this->getVisitorData();
+        
+        return view('admin.dashboard', compact('userGrowthData', 'userDistributionData', 'visitorData'));
     }
 
     public function users()
@@ -649,6 +654,86 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while fetching goals.'
+            ], 500);
+        }
+    }
+
+    private function getVisitorData()
+    {
+        try {
+            $days = 30;
+            $period = now()->subDays($days)->daysUntil(now());
+            
+            $dates = [];
+            $counts = [];
+            
+            foreach ($period as $date) {
+                $dateStr = $date->format('d M');
+                $count = Visitor::whereDate('created_at', $date)->count();
+                
+                // Log untuk debugging
+                Log::info("Visitor count for {$dateStr}: {$count}");
+                
+                $dates[] = $dateStr;
+                $counts[] = $count;
+            }
+
+            // Log total data
+            Log::info('Total visitor data:', [
+                'total_days' => count($dates),
+                'total_visitors' => array_sum($counts)
+            ]);
+
+            return [
+                'dates' => $dates,
+                'counts' => $counts
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error getting visitor data: ' . $e->getMessage());
+            return [
+                'dates' => [],
+                'counts' => []
+            ];
+        }
+    }
+
+    public function gallery()
+    {
+        return view('admin.gallery');
+    }
+
+    public function searchImages(Request $request)
+    {
+        try {
+            $page = (int)$request->query('page', 1);
+            $perPage = 20;
+            $images = [];
+
+            // Generate random images
+            for ($i = 0; $i < $perPage; $i++) {
+                $randomId = rand(1, 1000);
+                
+                $images[] = [
+                    'id' => $randomId,
+                    'thumbnail' => "https://picsum.photos/seed/{$randomId}/400/300", // thumbnail
+                    'preview' => "https://picsum.photos/seed/{$randomId}/800/600",   // preview
+                    'full' => "https://picsum.photos/seed/{$randomId}/2400/1800",   // high quality
+                    'download' => "https://picsum.photos/seed/{$randomId}/3840/2160", // 4K quality
+                    'source' => 'Picsum'
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'images' => $images,
+                'hasMore' => true
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in searchImages: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load images. Please try again later.'
             ], 500);
         }
     }

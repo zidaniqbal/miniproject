@@ -141,6 +141,26 @@
         .sidebar-menu a.active i {
             color: #fff;
         }
+
+        /* Sidebar Divider */
+        .sidebar-divider {
+            padding: 1rem 1rem 0.5rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-divider span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.05em;
+        }
+
+        /* Adjust spacing for menu items after divider */
+        .sidebar-divider + li {
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body class="{{ Auth::check() && Auth::user()->role == 2 ? 'admin-theme' : 'user-theme' }}">
@@ -192,9 +212,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}" data-title="User Management">
-                                <i class="bi bi-people"></i>
-                                <span>User Management</span>
+                            <a href="{{ route('admin.goals') }}" class="{{ request()->routeIs('admin.goals*') ? 'active' : '' }}" data-title="Goals">
+                                <i class="bi bi-bullseye"></i>
+                                <span>Goals</span>
                             </a>
                         </li>
                         <li>
@@ -204,15 +224,21 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.goals') }}" class="{{ request()->routeIs('admin.goals*') ? 'active' : '' }}" data-title="Goals">
-                                <i class="bi bi-bullseye"></i>
-                                <span>Goals</span>
+                            <a href="{{ route('admin.gallery') }}" class="{{ request()->routeIs('admin.gallery') ? 'active' : '' }}" data-title="Gallery">
+                                <i class="bi bi-images"></i>
+                                <span>Gallery</span>
                             </a>
                         </li>
+
+                        <!-- Admin Tools Divider -->
+                        <li class="sidebar-divider">
+                            <span>Admin Tools</span>
+                        </li>
+
                         <li>
-                            <a href="{{ route('admin.settings') }}" class="{{ request()->routeIs('admin.settings') ? 'active' : '' }}" data-title="Settings">
-                                <i class="bi bi-gear"></i>
-                                <span>Settings</span>
+                            <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}" data-title="User Management">
+                                <i class="bi bi-people"></i>
+                                <span>User Management</span>
                             </a>
                         </li>
                     @else
@@ -228,20 +254,31 @@
                                 <i class="bi bi-bullseye"></i>
                                 <span>Goals</span>
                             </a>
-                        </li>
                         <li>
                             <a href="{{ route('user.news') }}" class="{{ request()->routeIs('user.news*') ? 'active' : '' }}" data-title="News">
                                 <i class="bi bi-newspaper"></i>
                                 <span>Berita</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('user.settings') }}" class="{{ request()->routeIs('user.settings') ? 'active' : '' }}" data-title="Settings">
-                                <i class="bi bi-gear"></i>
-                                <span>Settings</span>
-                            </a>
-                        </li>
+                    </li>
+                    <li>
+                        <a href="{{ route('user.gallery') }}" class="{{ request()->routeIs('user.gallery') ? 'active' : '' }}" data-title="Gallery">
+                            <i class="bi bi-images"></i>
+                            <span>Gallery</span>
+                        </a>
+                    </li>   
                     @endif
+
+                    <!-- Common Menu Items -->
+                    <li class="sidebar-divider">
+                        <span>Account</span>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.settings') }}" class="{{ request()->routeIs('admin.settings') ? 'active' : '' }}" data-title="Settings">
+                            <i class="bi bi-gear"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="#" 
                            data-bs-toggle="modal" 

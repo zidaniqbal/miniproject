@@ -23,6 +23,18 @@ use Illuminate\Support\Facades\Artisan;
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/news', [LandingController::class, 'news'])->name('news');
 Route::get('/get-news', [LandingController::class, 'getNews'])->name('get-news');
+Route::get('/test-visitor', function() {
+    $todayCount = \App\Models\Visitor::whereDate('created_at', \Carbon\Carbon::today())->count();
+    $yesterdayCount = \App\Models\Visitor::whereDate('created_at', \Carbon\Carbon::yesterday())->count();
+    $totalCount = \App\Models\Visitor::count();
+    
+    return response()->json([
+        'today' => $todayCount,
+        'yesterday' => $yesterdayCount,
+        'total' => $totalCount,
+        'latest_visitors' => \App\Models\Visitor::latest()->take(5)->get()
+    ]);
+});
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -67,10 +79,12 @@ Route::middleware('auth')->group(function () {
         // Hanya routes news yang diperlukan
         Route::get('/news', [AdminController::class, 'news'])->name('admin.news');
         Route::get('/get-news', [AdminController::class, 'getNews'])->name('admin.get-news');
+        Route::get('/gallery', [AdminController::class, 'gallery'])->name('admin.gallery');
+        Route::get('/gallery/search', [AdminController::class, 'searchImages'])->name('admin.gallery.search');
     });
 
     // User Routes
-    Route::middleware('role:1')->prefix('user')->group(function () {
+    Route::middleware(['auth', 'role:1'])->group(function () {
         Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
         Route::get('/settings', [UserController::class, 'settings'])->name('user.settings');
         Route::post('/settings/update-profile', [UserController::class, 'updateProfile'])->name('user.settings.updateProfile');
@@ -88,5 +102,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/goals/{goal}/description', [UserController::class, 'updateGoalDescription'])->name('user.goals.updateDescription');
         Route::delete('/goals/{goal}', [UserController::class, 'deleteGoal'])->name('user.goals.delete');
         Route::get('/dashboard/goals-data', [UserController::class, 'getDashboardGoals'])->name('user.dashboard.goals-data');
+
+        Route::get('/user/gallery', [UserController::class, 'gallery'])->name('user.gallery');
+        Route::get('/user/gallery/search', [UserController::class, 'searchImages'])->name('user.gallery.search');
     });
 });

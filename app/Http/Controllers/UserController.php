@@ -415,4 +415,311 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function manga()
+    {
+        return view('user.manga');
+    }
+
+    public function getManga(Request $request)
+    {
+        try {
+            $page = $request->query('page', 1);
+            $baseUrl = "https://api.jikan.moe/v4/manga";
+            
+            $response = Http::get($baseUrl, [
+                'page' => $page,
+                'limit' => 24,
+                'order_by' => 'popularity',
+                'sort' => 'asc'
+            ]);
+            
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                // Transform the data
+                $transformedData = [
+                    'data' => collect($data['data'])->map(function($manga) {
+                        return [
+                            'endpoint' => $manga['mal_id'],
+                            'title' => $manga['title'],
+                            'thumb' => $manga['images']['jpg']['large_image_url'],
+                            'rating' => number_format($manga['score'] ?? 0, 1),
+                            'chapter_count' => $manga['chapters'] ?? 'Ongoing',
+                            'type' => $manga['type'] ?? 'Unknown',
+                            'status' => $manga['status'] ?? 'Unknown'
+                        ];
+                    }),
+                    'meta' => [
+                        'current_page' => $page,
+                        'last_page' => ceil($data['pagination']['items']['total'] / 24),
+                        'total' => $data['pagination']['items']['total']
+                    ]
+                ];
+
+                return response()->json([
+                    'success' => true,
+                    'manga' => $transformedData
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch manga'
+            ], 500);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching manga: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching manga: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function mangaDetail($id)
+    {
+        try {
+            $response = Http::get("https://api.jikan.moe/v4/manga/{$id}/full");
+            
+            if ($response->successful()) {
+                $mangaData = $response->json()['data'];
+                
+                $manga = [
+                    'id' => $mangaData['mal_id'],
+                    'title' => $mangaData['title'],
+                    'description' => $mangaData['synopsis'] ?? 'No description available',
+                    'cover' => $mangaData['images']['jpg']['large_image_url'],
+                    'status' => $mangaData['status'],
+                    'type' => $mangaData['type'],
+                    'chapters' => $mangaData['chapters'],
+                    'rating' => number_format($mangaData['score'] ?? 0, 1),
+                    'genres' => collect($mangaData['genres'])->pluck('name'),
+                    'authors' => collect($mangaData['authors'])->pluck('name'),
+                    'published' => $mangaData['published']['string'],
+                    'popularity' => $mangaData['popularity'],
+                    'members' => $mangaData['members'],
+                    'background' => $mangaData['background']
+                ];
+                
+                return view('user.manga-detail', compact('manga'));
+            }
+
+            return redirect()->route('user.manga')
+                ->with('error', 'Manga tidak ditemukan.');
+
+        } catch (\Exception $e) {
+            Log::error('Error showing manga detail: ' . $e->getMessage());
+            return redirect()->route('user.manga')
+                ->with('error', 'Terjadi kesalahan saat mengambil detail manga.');
+        }
+    }
+
+    public function mangaChapters($id)
+    {
+        try {
+            Log::info('Fetching chapters for manga ID: ' . $id);
+            
+            // Konfigurasi HTTP client
+            $http = Http::withoutVerifying()
+                        ->timeout(10)
+                        ->retry(3, 100);
+
+            // Ambil detail manga dari Jikan API
+            $mangaResponse = $http->get("https://api.jikan.moe/v4/manga/{$id}/full");
+            
+            if (!$mangaResponse->successful()) {
+                throw new \Exception('Failed to fetch manga details');
+            }
+
+            $mangaData = $mangaResponse->json()['data'];
+            
+            // Cari manga di MangaDex
+            $searchResponse = $http->get('https://api.mangadex.org/manga', [
+                'title' => $mangaData['title']
+            ]);
+            
+            if ($searchResponse->successful() && !empty($searchResponse->json()['data'])) {
+                $mangaDexId = $searchResponse->json()['data'][0]['id'];
+                
+                // Ambil chapter list
+                $chaptersResponse = $http->get("https://api.mangadex.org/manga/{$mangaDexId}/feed", [
+                    'limit' => 100,
+                    'translatedLanguage[]' => ['en'],
+                    'order[chapter]' => 'desc'
+                ]);
+                
+                if ($chaptersResponse->successful()) {
+                    $chaptersData = $chaptersResponse->json()['data'];
+                    
+                    $chapters = collect($chaptersData)->map(function($chapter) use ($mangaData) {
+                        return [
+                            'id' => $chapter['id'],
+                            'title' => $chapter['attributes']['title'] ?? "Chapter {$chapter['attributes']['chapter']}",
+                            'number' => $chapter['attributes']['chapter'],
+                            'url' => route('user.manga.read', [
+                                'mangaId' => $mangaData['mal_id'],
+                                'chapterId' => $chapter['id']
+                            ])
+                        ];
+                    })->sortByDesc('number')->values()->all();
+                    
+                    $manga = [
+                        'id' => $mangaData['mal_id'],
+                        'title' => $mangaData['title'],
+                        'cover' => $mangaData['images']['jpg']['large_image_url'],
+                        'description' => $mangaData['synopsis'],
+                        'chapters' => $chapters
+                    ];
+                    
+                    return view('user.manga-chapters', compact('manga'));
+                }
+            }
+            
+            // Fallback jika tidak ditemukan di MangaDex
+            $totalChapters = $mangaData['chapters'] ?? 0;
+            if ($totalChapters == 0 && isset($mangaData['volumes'])) {
+                $totalChapters = $mangaData['volumes'] * 5;
+            }
+            
+            $chapters = [];
+            for ($i = 1; $i <= $totalChapters; $i++) {
+                $chapters[] = [
+                    'id' => $i,
+                    'title' => "Chapter {$i}",
+                    'number' => $i,
+                    'url' => route('user.manga.read', [
+                        'mangaId' => $mangaData['mal_id'],
+                        'chapterId' => $i
+                    ])
+                ];
+            }
+            
+            $manga = [
+                'id' => $mangaData['mal_id'],
+                'title' => $mangaData['title'],
+                'cover' => $mangaData['images']['jpg']['large_image_url'],
+                'description' => $mangaData['synopsis'],
+                'chapters' => array_reverse($chapters)
+            ];
+            
+            return view('user.manga-chapters', compact('manga'));
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching chapters: ' . $e->getMessage());
+            return redirect()->route('user.manga.detail', $id)
+                ->with('error', 'Terjadi kesalahan saat mengambil daftar chapter.');
+        }
+    }
+
+    public function readChapter($mangaId, $chapterId)
+    {
+        try {
+            $http = Http::withoutVerifying()
+                        ->timeout(10)
+                        ->retry(3, 100);
+
+            // Ambil detail manga
+            $mangaResponse = $http->get("https://api.jikan.moe/v4/manga/{$mangaId}");
+            
+            if (!$mangaResponse->successful()) {
+                throw new \Exception('Failed to fetch manga data');
+            }
+            
+            $mangaData = $mangaResponse->json()['data'];
+            
+            // Ambil data chapter dari MangaDex
+            if (is_numeric($chapterId)) {
+                // Fallback untuk chapter yang digenerate
+                $chapter = [
+                    'title' => "Chapter {$chapterId}",
+                    'number' => $chapterId,
+                    'manga_title' => $mangaData['title'],
+                    'manga_id' => $mangaId,
+                    'images' => []
+                ];
+            } else {
+                // Ambil data chapter dari MangaDex
+                $chapterResponse = $http->get("https://api.mangadex.org/chapter/{$chapterId}");
+                
+                if ($chapterResponse->successful()) {
+                    $chapterData = $chapterResponse->json()['data'];
+                    
+                    // Ambil URL gambar
+                    $imagesResponse = $http->get("https://api.mangadex.org/at-home/server/{$chapterId}");
+                    
+                    if ($imagesResponse->successful()) {
+                        $imageData = $imagesResponse->json();
+                        $baseUrl = $imageData['baseUrl'];
+                        $hash = $imageData['chapter']['hash'];
+                        $imageFiles = $imageData['chapter']['data'];
+                        
+                        $images = array_map(function($file) use ($baseUrl, $hash) {
+                            return "{$baseUrl}/data/{$hash}/{$file}";
+                        }, $imageFiles);
+                        
+                        $chapter = [
+                            'title' => $chapterData['attributes']['title'] ?? "Chapter {$chapterData['attributes']['chapter']}",
+                            'number' => $chapterData['attributes']['chapter'],
+                            'manga_title' => $mangaData['title'],
+                            'manga_id' => $mangaId,
+                            'images' => $images
+                        ];
+                    }
+                }
+            }
+            
+            if (!isset($chapter)) {
+                throw new \Exception('Chapter not found');
+            }
+            
+            return view('user.manga-chapter', compact('chapter'));
+
+        } catch (\Exception $e) {
+            Log::error('Error reading chapter: ' . $e->getMessage());
+            return redirect()->route('user.manga.chapters', $mangaId)
+                ->with('error', 'Terjadi kesalahan saat membaca chapter.');
+        }
+    }
+    public function gallery()
+    {
+        return view('user.gallery');
+    }
+
+    public function searchImages(Request $request)
+    {
+        try {
+            $page = (int)$request->query('page', 1);
+            $perPage = 20;
+            $images = [];
+
+            // Generate random images
+            for ($i = 0; $i < $perPage; $i++) {
+                $randomId = rand(1, 1000);
+                
+                $images[] = [
+                    'id' => $randomId,
+                    'thumbnail' => "https://picsum.photos/seed/{$randomId}/400/300", // thumbnail
+                    'preview' => "https://picsum.photos/seed/{$randomId}/800/600",   // preview
+                    'full' => "https://picsum.photos/seed/{$randomId}/2400/1800",   // high quality
+                    'download' => "https://picsum.photos/seed/{$randomId}/3840/2160", // 4K quality
+                    'source' => 'Picsum'
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'images' => $images,
+                'hasMore' => true
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in searchImages: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load images. Please try again later.'
+            ], 500);
+        }
+    }
 } 

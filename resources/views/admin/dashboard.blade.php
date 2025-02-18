@@ -79,6 +79,38 @@
             </div>
         </div>
 
+        <div class="col-md-12 mb-4">
+            <div class="settings-card">
+                <h2 class="settings-section-title">Aktivitas Pengunjung</h2>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-value text-primary">{{ $visitorData['counts'][count($visitorData['counts'])-1] }}</div>
+                            <div class="stat-label">Hari Ini</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-value text-success">{{ $visitorData['counts'][count($visitorData['counts'])-2] }}</div>
+                            <div class="stat-label">Kemarin</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-value text-info">{{ array_sum($visitorData['counts']) }}</div>
+                            <div class="stat-label">Total Minggu Ini</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-value text-warning">{{ round(array_sum($visitorData['counts'])/count($visitorData['counts'])) }}</div>
+                            <div class="stat-label">Rata-rata Harian</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Charts Row -->
         <div class="row">
             <div class="col-md-8 mb-4">
