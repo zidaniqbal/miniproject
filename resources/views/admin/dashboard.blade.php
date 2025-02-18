@@ -106,7 +106,7 @@
                                 <tr>
                                     <th>Nama</th>
                                     <th>Email</th>
-                                    <th>Peran</th>
+                                    <th>Role</th>
                                     <th>Bergabung</th>
                                 </tr>
                             </thead>
@@ -126,7 +126,7 @@
                                         @if($user->role == 2)
                                             <span class="badge bg-danger">Admin</span>
                                         @else
-                                            <span class="badge bg-success">Pengguna</span>
+                                            <span class="badge bg-success">User</span>
                                         @endif
                                     </td>
                                     <td>{{ $user->created_at->diffForHumans() }}</td>
@@ -154,6 +154,44 @@
                 </div>
             </div>
         </div>
+
+        <!-- Goals Overview Row -->
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="settings-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="settings-section-title mb-0">Ringkasan Target Pribadi</h2>
+                        <a href="{{ route('admin.goals') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-list-check me-1"></i>Kelola Target
+                        </a>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <canvas id="goalsOverviewChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="goals-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value text-primary" id="totalGoals">0</div>
+                                    <div class="stat-label">Total Target</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value text-success" id="completedGoals">0</div>
+                                    <div class="stat-label">Target Selesai</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value text-info" id="inProgressGoals">0</div>
+                                    <div class="stat-label">Sedang Dikerjakan</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -181,9 +219,9 @@
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Peran</label>
+                        <label for="role" class="form-label">Role</label>
                         <select class="form-select" id="role" name="role" required>
-                            <option value="1">Pengguna</option>
+                            <option value="1">User</option>
                             <option value="2">Admin</option>
                         </select>
                     </div>
@@ -481,10 +519,54 @@
 .settings-card {
     animation: fadeIn 0.3s ease-out;
 }
+
+/* Goals Overview Styles */
+.goals-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    background: #F9FAFB;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.chart-container {
+    position: relative;
+    margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+    .goals-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .goals-stats {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // User Growth Chart
@@ -650,6 +732,62 @@ $(document).ready(function() {
         const bsToast = new bootstrap.Toast(toast);
         bsToast.show();
     }
+
+    // Fetch goals data
+    fetch('{{ route("admin.dashboard.goals-data") }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const goals = data.goals;
+                
+                // Calculate status counts
+                const statusCounts = {
+                    completed: goals.filter(g => g.status === 'completed').length,
+                    in_progress: goals.filter(g => g.status === 'in_progress').length,
+                    not_started: goals.filter(g => g.status === 'not_started').length
+                };
+
+                // Update stats
+                document.getElementById('totalGoals').textContent = goals.length;
+                document.getElementById('completedGoals').textContent = statusCounts.completed;
+                document.getElementById('inProgressGoals').textContent = statusCounts.in_progress;
+
+                // Create goals overview chart
+                const ctx = document.getElementById('goalsOverviewChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Selesai', 'Sedang Dikerjakan', 'Belum Dimulai'],
+                        datasets: [{
+                            data: [statusCounts.completed, statusCounts.in_progress, statusCounts.not_started],
+                            backgroundColor: ['#10B981', '#4F46E5', '#6B7280'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching goals data:', error);
+        });
 });
 </script>
 @endpush

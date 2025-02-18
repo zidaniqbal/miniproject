@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use App\Models\Goal;
+use Carbon\Carbon;
 
-class Usercontroller extends Controller
+class UserController extends Controller
 {
     public function index()
     {
@@ -230,6 +232,187 @@ class Usercontroller extends Controller
             Log::error('Error showing news detail: ' . $e->getMessage());
             return redirect()->route('user.news')
                 ->with('error', 'Berita tidak ditemukan atau terjadi kesalahan.');
+        }
+    }
+
+    public function goals()
+    {
+        $goals = Goal::where('user_id', Auth::id())
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+        return view('user.goals', compact('goals'));
+    }
+
+    public function createGoal()
+    {
+        return view('user.goals.create');
+    }
+
+    public function storeGoal(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'target_date' => 'required|date|after:today',
+                'priority' => 'required|in:low,medium,high',
+            ]);
+
+            DB::beginTransaction();
+
+            $goal = Goal::create([
+                'user_id' => Auth::id(),
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'target_date' => $validated['target_date'],
+                'priority' => $validated['priority'],
+                'status' => 'not_started',
+                'progress' => 0,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Goal created successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating goal: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating goal.'
+            ], 500);
+        }
+    }
+
+    public function updateGoalProgress(Request $request, Goal $goal)
+    {
+        try {
+            if ($goal->user_id !== Auth::id()) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            $validated = $request->validate([
+                'progress' => 'required|integer|min:0|max:100',
+                'status' => 'required|in:not_started,in_progress,completed',
+            ]);
+
+            DB::beginTransaction();
+
+            $goal->update([
+                'progress' => $validated['progress'],
+                'status' => $validated['status']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Goal progress updated successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating goal progress: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating goal progress.'
+            ], 500);
+        }
+    }
+
+    public function deleteGoal(Goal $goal)
+    {
+        try {
+            if ($goal->user_id !== Auth::id()) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            DB::beginTransaction();
+            $goal->delete();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Goal deleted successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting goal: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting goal.'
+            ], 500);
+        }
+    }
+
+    public function getDashboardGoals()
+    {
+        $goals = Goal::where('user_id', Auth::id())->get();
+        return response()->json(['goals' => $goals]);
+    }
+
+    public function getGoal(Goal $goal)
+    {
+        try {
+            if ($goal->user_id !== Auth::id()) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            return response()->json([
+                'success' => true,
+                'goal' => $goal,
+                'points' => $goal->points
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching goal: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching goal details.'
+            ], 500);
+        }
+    }
+
+    public function updateGoalDescription(Request $request, Goal $goal)
+    {
+        try {
+            if ($goal->user_id !== Auth::id()) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            $validated = $request->validate([
+                'description' => 'nullable|string|max:1000',
+            ]);
+
+            DB::beginTransaction();
+
+            $goal->update([
+                'description' => $validated['description']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Deskripsi berhasil diperbarui!'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating goal description: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui deskripsi'
+            ], 500);
         }
     }
 } 

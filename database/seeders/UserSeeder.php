@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
         ]);
 
         // Create 200 Fake Users
-        for ($i = 0; $i < 200; $i++) {
+        for ($i = 0; $i < 500; $i++) {
             User::create([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,

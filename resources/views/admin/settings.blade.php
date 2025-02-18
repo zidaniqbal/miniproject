@@ -205,6 +205,33 @@
     .toast-container {
         z-index: 1056;
     }
+
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    .modal-header {
+        border-bottom: 2px solid #edf2f7;
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 2px solid #edf2f7;
+        padding: 1rem 1.5rem;
+    }
+
+    #disableUrl {
+        background-color: #f8fafc;
+        font-family: monospace;
+    }
+
+    .text-warning {
+        color: #f59e0b !important;
+    }
 </style>
 @endsection
 
@@ -300,26 +327,8 @@
                     <button type="submit" class="btn btn-primary">Ubah Kata Sandi</button>
                 </form>
             </div>
-
-            <!-- System Settings -->
-            <div class="settings-card">
-                <h2 class="settings-section-title">Pengaturan Sistem</h2>
-                <form id="systemSettingsForm">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label">Mode Pemeliharaan</label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="maintenanceMode">
-                            <label class="form-check-label" for="maintenanceMode">Aktifkan mode pemeliharaan</label>
-                        </div>
-                        <small class="text-muted">Saat diaktifkan, hanya admin yang dapat mengakses situs</small>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
-                </form>
-            </div>
         </div>
     </div>
-
 
 <!-- Toast Container -->
 <div class="toast-container position-fixed top-0 end-0 p-3">

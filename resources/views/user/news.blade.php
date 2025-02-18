@@ -233,6 +233,19 @@
             padding: 1rem;
         }
     }
+
+    /* Badge Styles */
+    .badge {
+        text-transform: capitalize;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+    }
+
+    .bg-primary {
+        background-color: #4F46E5 !important;
+    }
 </style>
 @endsection
 
@@ -361,6 +374,7 @@ $(document).ready(function() {
                                     <img src="${article.urlToImage}" class="card-img-top" alt="${article.title}" 
                                          onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
                                     <div class="card-body">
+                                        <span class="badge bg-primary mb-2">${$('#category').val()}</span>
                                         <h5 class="card-title">${article.title}</h5>
                                         <p class="card-text">${article.description || 'Tidak ada deskripsi'}</p>
                                         <a href="${article.url}" target="_blank" class="btn btn-primary w-100">Baca Selengkapnya</a>
@@ -395,8 +409,9 @@ $(document).ready(function() {
         });
     }
 
-    // Load news on page load
-    loadNews();
+    // Load news on page load with 'nasional' as default category
+    $('#category').val('nasional'); // Set the select element value
+    loadNews('nasional');
 
     // Handle category change
     $('#category').change(function() {

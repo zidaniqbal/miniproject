@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LandingController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,8 +52,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
         Route::post('/settings/update-profile', [AdminController::class, 'updateProfile'])->name('admin.settings.updateProfile');
         Route::post('/settings/update-password', [AdminController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+        Route::post('/settings/update-maintenance', [AdminController::class, 'updateMaintenanceMode'])
+            ->name('admin.settings.updateMaintenance');
+
+            // Goals routes
+        Route::get('/goals', [AdminController::class, 'goals'])->name('admin.goals');
+        Route::get('/goals/{goal}', [AdminController::class, 'getGoal'])->name('admin.goals.get');
+        Route::post('/goals', [AdminController::class, 'storeGoal'])->name('admin.goals.store');
+        Route::post('/goals/{goal}/progress', [AdminController::class, 'updateGoalProgress'])->name('admin.goals.updateProgress');
+        Route::post('/goals/{goal}/description', [AdminController::class, 'updateGoalDescription'])->name('admin.goals.updateDescription');
+        Route::delete('/goals/{goal}', [AdminController::class, 'deleteGoal'])->name('admin.goals.delete');
+        Route::get('/dashboard/goals-data', [AdminController::class, 'getDashboardGoals'])->name('admin.dashboard.goals-data');
         
-        // Add these new routes for admin news
+        // Hanya routes news yang diperlukan
         Route::get('/news', [AdminController::class, 'news'])->name('admin.news');
         Route::get('/get-news', [AdminController::class, 'getNews'])->name('admin.get-news');
     });
@@ -67,5 +79,14 @@ Route::middleware('auth')->group(function () {
         // Add these new routes for user news
         Route::get('/news', [UserController::class, 'news'])->name('user.news');
         Route::get('/get-news', [UserController::class, 'getNews'])->name('user.get-news');
+        
+        // Goals routes
+        Route::get('/goals', [UserController::class, 'goals'])->name('user.goals');
+        Route::get('/goals/{goal}', [UserController::class, 'getGoal'])->name('user.goals.get');
+        Route::post('/goals', [UserController::class, 'storeGoal'])->name('user.goals.store');
+        Route::post('/goals/{goal}/progress', [UserController::class, 'updateGoalProgress'])->name('user.goals.updateProgress');
+        Route::post('/goals/{goal}/description', [UserController::class, 'updateGoalDescription'])->name('user.goals.updateDescription');
+        Route::delete('/goals/{goal}', [UserController::class, 'deleteGoal'])->name('user.goals.delete');
+        Route::get('/dashboard/goals-data', [UserController::class, 'getDashboardGoals'])->name('user.dashboard.goals-data');
     });
 });

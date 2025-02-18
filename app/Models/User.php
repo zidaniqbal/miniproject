@@ -78,4 +78,9 @@ class User extends Authenticatable
     {
         return $this->role === ($role === 'admin' ? 2 : 1);
     }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class);
+    }
 }

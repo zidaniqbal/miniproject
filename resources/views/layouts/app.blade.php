@@ -30,6 +30,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         .sidebar .avatar {
             width: 40px;
@@ -128,6 +131,16 @@
                 margin: 1rem;
             }
         }
+
+        /* Active Sidebar Link */
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .sidebar-menu a.active i {
+            color: #fff;
+        }
     </style>
 </head>
 <body class="{{ Auth::check() && Auth::user()->role == 2 ? 'admin-theme' : 'user-theme' }}">
@@ -173,25 +186,31 @@
                     @if(Auth::user()->role == 2)
                         <!-- Admin Menu -->
                         <li>
-                            <a href="{{ route('admin.dashboard') }}" data-title="Dashboard">
+                            <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" data-title="Dashboard">
                                 <i class="bi bi-speedometer2"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.users') }}" data-title="User Management">
+                            <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}" data-title="User Management">
                                 <i class="bi bi-people"></i>
                                 <span>User Management</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.news') }}" data-title="News">
+                            <a href="{{ route('admin.news') }}" class="{{ request()->routeIs('admin.news*') ? 'active' : '' }}" data-title="News">
                                 <i class="bi bi-newspaper"></i>
                                 <span>Berita</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.settings') }}" data-title="Settings">
+                            <a href="{{ route('admin.goals') }}" class="{{ request()->routeIs('admin.goals*') ? 'active' : '' }}" data-title="Goals">
+                                <i class="bi bi-bullseye"></i>
+                                <span>Goals</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings') }}" class="{{ request()->routeIs('admin.settings') ? 'active' : '' }}" data-title="Settings">
                                 <i class="bi bi-gear"></i>
                                 <span>Settings</span>
                             </a>
@@ -199,19 +218,25 @@
                     @else
                         <!-- User Menu -->
                         <li>
-                            <a href="{{ route('user.dashboard') }}" data-title="Dashboard">
+                            <a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}" data-title="Dashboard">
                                 <i class="bi bi-grid"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('user.news') }}" data-title="News">
+                            <a href="{{ route('user.goals') }}" class="{{ request()->routeIs('user.goals*') ? 'active' : '' }}" data-title="Goals">
+                                <i class="bi bi-bullseye"></i>
+                                <span>Goals</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('user.news') }}" class="{{ request()->routeIs('user.news*') ? 'active' : '' }}" data-title="News">
                                 <i class="bi bi-newspaper"></i>
                                 <span>Berita</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('user.settings') }}" data-title="Settings">
+                            <a href="{{ route('user.settings') }}" class="{{ request()->routeIs('user.settings') ? 'active' : '' }}" data-title="Settings">
                                 <i class="bi bi-gear"></i>
                                 <span>Settings</span>
                             </a>
