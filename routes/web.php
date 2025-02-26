@@ -21,8 +21,9 @@ use Illuminate\Support\Facades\Artisan;
 
 // Public routes
 Route::get('/', [LandingController::class, 'index'])->name('home');
-Route::get('/news', [LandingController::class, 'news'])->name('news');
-Route::get('/get-news', [LandingController::class, 'getNews'])->name('get-news');
+Route::get('/landing/news', [LandingController::class, 'news'])->name('landing.news');
+Route::get('/landing/get-news', [LandingController::class, 'getNews'])->name('landing.get-news');
+Route::get('/landing/news/{category}/{title}', [LandingController::class, 'showNews'])->name('landing.news.show');
 Route::get('/test-visitor', function() {
     $todayCount = \App\Models\Visitor::whereDate('created_at', \Carbon\Carbon::today())->count();
     $yesterdayCount = \App\Models\Visitor::whereDate('created_at', \Carbon\Carbon::yesterday())->count();
@@ -81,6 +82,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/get-news', [AdminController::class, 'getNews'])->name('admin.get-news');
         Route::get('/gallery', [AdminController::class, 'gallery'])->name('admin.gallery');
         Route::get('/gallery/search', [AdminController::class, 'searchImages'])->name('admin.gallery.search');
+
+        // Photobooth routes
+        Route::get('/photobooth', [AdminController::class, 'photobooth'])->name('admin.photobooth');
+        Route::post('/photobooth/save', [AdminController::class, 'savePhotobooth'])->name('admin.photobooth.save');
+        Route::get('/photobooth-gallery', [AdminController::class, 'photoboothGallery'])->name('admin.photobooth.gallery');
+        Route::get('/photo/{photo}/download', [AdminController::class, 'downloadPhoto'])->name('admin.photo.download');
+        Route::delete('/photo/{photo}', [AdminController::class, 'deletePhoto'])->name('admin.photo.delete');
     });
 
     // User Routes
@@ -105,5 +113,16 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/user/gallery', [UserController::class, 'gallery'])->name('user.gallery');
         Route::get('/user/gallery/search', [UserController::class, 'searchImages'])->name('user.gallery.search');
+    });
+
+    // Admin & User news routes
+    Route::prefix('admin')->group(function () {
+        Route::get('/news', [AdminController::class, 'news'])->name('admin.news');
+        Route::get('/get-news', [AdminController::class, 'getNews'])->name('admin.get-news');
+    });
+    
+    Route::prefix('user')->group(function () {
+        Route::get('/news', [UserController::class, 'news'])->name('user.news');
+        Route::get('/get-news', [UserController::class, 'getNews'])->name('user.get-news');
     });
 });

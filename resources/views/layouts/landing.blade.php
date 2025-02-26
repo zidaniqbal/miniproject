@@ -24,7 +24,94 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    @stack('styles')
+    @yield('cssPage')
+
+    <style>
+    .navbar {
+        transition: all 0.3s ease;
+        background-color: transparent;
+    }
+
+    .navbar-scrolled {
+        background-color: #002B5B !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Style untuk link navbar */
+    .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.7) !important;
+        font-weight: 500;
+        padding: 0.5rem 1rem !important;
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    /* Efek backdrop blur saat hover */
+    .navbar-nav .nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover::before {
+        opacity: 1;
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: #FFA41B !important;
+    }
+
+    .navbar-nav .nav-link.active {
+        color: #FFA41B !important;
+        background: rgba(255, 164, 27, 0.1);
+        border-radius: 8px;
+    }
+
+    /* Pastikan tombol tetap terlihat */
+    .btn-login {
+        background-color: transparent;
+        border: 2px solid #FFA41B;
+        color: #FFA41B;
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-login:hover {
+        background-color: #FFA41B;
+        color: white;
+    }
+
+    .btn-register {
+        background-color: #FFA41B;
+        border: 2px solid #FFA41B;
+        color: white;
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-register:hover {
+        background-color: #FF8C00;
+        border-color: #FF8C00;
+    }
+
+    /* Logo text protection */
+    .navbar-brand {
+        position: relative;
+        z-index: 1;
+    }
+
+    .navbar-brand img {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -39,13 +126,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/') }}">Homepage</a>
+                        <a class="nav-link {{ Request::is('/') ? 'active' : '' }}" href="{{ route('home') }}">Homepage</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/news') }}">News</a>
+                        <a class="nav-link {{ Request::routeIs('landing.news') ? 'active' : '' }}" 
+                           href="{{ route('landing.news') }}">News</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/about') }}">About</a>
+                        <a class="nav-link {{ Request::is('about') ? 'active' : '' }}" href="{{ url('/about') }}">About</a>
                     </li>
                 </ul>
                 <div class="d-flex">
@@ -74,6 +162,25 @@
         </div>
     </div>
 
-    @stack('scripts')
+    @yield('jsPage')
+
+    <script>
+    $(document).ready(function() {
+        // Fungsi untuk mengubah navbar saat scroll
+        function toggleNavbarBg() {
+            if ($(window).scrollTop() > 50) {
+                $('.navbar').addClass('navbar-scrolled');
+            } else {
+                $('.navbar').removeClass('navbar-scrolled');
+            }
+        }
+
+        // Jalankan saat halaman dimuat
+        toggleNavbarBg();
+
+        // Jalankan saat scroll
+        $(window).scroll(toggleNavbarBg);
+    });
+    </script>
 </body>
 </html> 

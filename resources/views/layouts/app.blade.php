@@ -229,6 +229,12 @@
                                 <span>Gallery</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.photobooth') }}" class="{{ request()->routeIs('admin.photobooth*') ? 'active' : '' }}" data-title="Photo Booth">
+                                <i class="bi bi-camera"></i>
+                                <span>Photo Booth</span>
+                            </a>
+                        </li>
 
                         <!-- Admin Tools Divider -->
                         <li class="sidebar-divider">

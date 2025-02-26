@@ -20,6 +20,7 @@ use App\Models\Goal;
 use Carbon\Carbon;
 use App\Models\Visitor;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Photo;
 
 class AdminController extends Controller
 {
@@ -734,6 +735,88 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to load images. Please try again later.'
+            ], 500);
+        }
+    }
+
+    public function photobooth()
+    {
+        return view('admin.photobooth');
+    }
+
+    public function savePhotobooth(Request $request)
+    {
+        try {
+            $image = $request->input('image');
+            $image = str_replace('data:image/png;base64,', '', $image);
+            $image = str_replace(' ', '+', $image);
+            
+            $imageName = 'photobooth_' . time() . '.png';
+            Storage::disk('public')->put('photobooths/' . $imageName, base64_decode($image));
+
+            // Save to database
+            Photo::create([
+                'user_id' => auth()->id(),
+                'filename' => $imageName,
+                'path' => 'photobooths/' . $imageName,
+                'type' => 'photobooth'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'image' => $imageName
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving photobooth image: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save image'
+            ], 500);
+        }
+    }
+
+    public function photoboothGallery()
+    {
+        $photos = Photo::where('user_id', auth()->id())
+                       ->where('type', 'photobooth')
+                       ->orderBy('created_at', 'desc')
+                       ->get();
+        
+        return view('admin.photobooth-gallery', compact('photos'));
+    }
+
+    public function downloadPhoto(Photo $photo)
+    {
+        if ($photo->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $path = Storage::path('public/' . $photo->path);
+        return response()->download($path, $photo->filename);
+    }
+
+    public function deletePhoto(Photo $photo)
+    {
+        try {
+            if ($photo->user_id !== auth()->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            Storage::disk('public')->delete($photo->path);
+            $photo->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Photo deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error deleting photo: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete photo'
             ], 500);
         }
     }
