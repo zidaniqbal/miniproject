@@ -85,10 +85,11 @@ Route::middleware('auth')->group(function () {
 
         // Photobooth routes
         Route::get('/photobooth', [AdminController::class, 'photobooth'])->name('admin.photobooth');
-        Route::post('/photobooth/save', [AdminController::class, 'savePhotobooth'])->name('admin.photobooth.save');
-        Route::get('/photobooth-gallery', [AdminController::class, 'photoboothGallery'])->name('admin.photobooth.gallery');
+        Route::get('/photobooth/gallery', [AdminController::class, 'photoboothGallery'])->name('admin.photobooth.gallery');
+        Route::post('/photobooth/save', [AdminController::class, 'savePhotoboothImage'])->name('admin.photobooth.save');
         Route::get('/photo/{photo}/download', [AdminController::class, 'downloadPhoto'])->name('admin.photo.download');
         Route::delete('/photo/{photo}', [AdminController::class, 'deletePhoto'])->name('admin.photo.delete');
+        Route::delete('/photobooth/delete/{photo}', [AdminController::class, 'deletePhotoboothImage'])->name('admin.photobooth.delete');
     });
 
     // User Routes
@@ -111,8 +112,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/goals/{goal}', [UserController::class, 'deleteGoal'])->name('user.goals.delete');
         Route::get('/dashboard/goals-data', [UserController::class, 'getDashboardGoals'])->name('user.dashboard.goals-data');
 
+        // Gallery routes
         Route::get('/user/gallery', [UserController::class, 'gallery'])->name('user.gallery');
         Route::get('/user/gallery/search', [UserController::class, 'searchImages'])->name('user.gallery.search');
+
+        // Photobooth routes
+        Route::get('/photobooth', [UserController::class, 'photobooth'])->name('user.photobooth');
+        Route::get('/photobooth/gallery', [UserController::class, 'photoboothGallery'])->name('user.photobooth.gallery');
+        Route::post('/photobooth/save', [UserController::class, 'savePhotoboothImage'])->name('user.photobooth.save');
+        Route::get('/photo/{photo}/download', [UserController::class, 'downloadPhoto'])->name('user.photo.download');
+        Route::delete('/photo/{photo}', [UserController::class, 'deletePhoto'])->name('user.photo.delete');
+        Route::delete('/photobooth/delete/{photo}', [UserController::class, 'deletePhotoboothImage'])->name('user.photobooth.delete');
     });
 
     // Admin & User news routes

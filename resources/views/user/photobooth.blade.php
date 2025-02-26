@@ -88,10 +88,6 @@
         margin-right: 0.5rem;
     }
 
-    .btn-primary.loading .spinner-border {
-        display: inline-block;
-    }
-
     .btn-primary.success {
         background-color: #10B981;
         border-color: #10B981;
@@ -479,7 +475,7 @@
         <!-- Page Header -->
         <div class="page-header d-flex justify-content-between align-items-center mb-4">
             <h1 class="page-title">Photobooth</h1>
-            <a href="{{ route('admin.photobooth.gallery') }}" class="btn btn-primary">
+            <a href="{{ route('user.photobooth.gallery') }}" class="btn btn-primary">
                 <i class="bi bi-images me-2"></i>View Gallery
             </a>
         </div>
@@ -614,7 +610,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="{{ route('admin.photobooth.gallery') }}" class="btn btn-primary">View in Gallery</a>
+                <a href="{{ route('user.photobooth.gallery') }}" class="btn btn-primary">View in Gallery</a>
             </div>
         </div>
     </div>
@@ -867,7 +863,7 @@ $(document).ready(function() {
         function checkAllLoaded() {
             if (loadedPhotos === photos.length && loadedTemplate) {
                 $.ajax({
-                    url: '{{ route("admin.photobooth.save") }}',
+                    url: '{{ route("user.photobooth.save") }}',
                     method: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',

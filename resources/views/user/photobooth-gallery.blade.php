@@ -203,7 +203,7 @@
         <!-- Page Header -->
         <div class="page-header d-flex justify-content-between align-items-center mb-4">
             <h1 class="page-title">Photo Gallery</h1>
-            <a href="{{ route('admin.photobooth') }}" class="btn btn-primary">
+            <a href="{{ route('user.photobooth') }}" class="btn btn-primary">
                 <i class="bi bi-camera me-2"></i>Take Photos
             </a>
         </div>
@@ -311,7 +311,7 @@ $(document).ready(function() {
     // Handle delete button click
     $('.delete-photo').click(function() {
         const photoName = $(this).data('photo');
-        const deleteUrl = "{{ route('admin.photobooth.delete', ['photo' => ':photo']) }}".replace(':photo', photoName);
+        const deleteUrl = "{{ route('user.photobooth.delete', ['photo' => ':photo']) }}".replace(':photo', photoName);
         $('#deleteForm').attr('action', deleteUrl);
     });
 

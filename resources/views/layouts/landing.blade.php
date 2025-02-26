@@ -30,58 +30,60 @@
     .navbar {
         transition: all 0.3s ease;
         background-color: transparent;
+        padding: 1rem 0;
     }
 
     .navbar-scrolled {
         background-color: #002B5B !important;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 0;
     }
 
     /* Style untuk link navbar */
     .navbar-nav .nav-link {
-        color: rgba(255, 255, 255, 0.7) !important;
+        color: rgba(255, 255, 255, 0.9) !important;
         font-weight: 500;
         padding: 0.5rem 1rem !important;
         transition: all 0.3s ease;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
         position: relative;
     }
 
-    /* Efek backdrop blur saat hover */
-    .navbar-nav .nav-link::before {
+    .navbar-nav .nav-link::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
         bottom: 0;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        opacity: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: #FFA41B;
         transition: all 0.3s ease;
+        transform: translateX(-50%);
     }
 
-    .navbar-nav .nav-link:hover::before {
-        opacity: 1;
-    }
-
-    .navbar-nav .nav-link:hover {
-        color: #FFA41B !important;
+    .navbar-nav .nav-link:hover::after {
+        width: 100%;
     }
 
     .navbar-nav .nav-link.active {
         color: #FFA41B !important;
-        background: rgba(255, 164, 27, 0.1);
-        border-radius: 8px;
+    }
+
+    .navbar-nav .nav-link.active::after {
+        width: 100%;
     }
 
     /* Pastikan tombol tetap terlihat */
+    .btn-login,
+    .btn-register {
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
     .btn-login {
         background-color: transparent;
         border: 2px solid #FFA41B;
         color: #FFA41B;
-        transition: all 0.3s ease;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
 
     .btn-login:hover {
@@ -93,8 +95,6 @@
         background-color: #FFA41B;
         border: 2px solid #FFA41B;
         color: white;
-        transition: all 0.3s ease;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
 
     .btn-register:hover {

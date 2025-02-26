@@ -744,45 +744,36 @@ class AdminController extends Controller
         return view('admin.photobooth');
     }
 
-    public function savePhotobooth(Request $request)
+    public function photoboothGallery()
+    {
+        $userId = auth()->id();
+        $photos = Storage::disk('public')->files("photobooth/{$userId}");
+        return view('admin.photobooth-gallery', compact('photos'));
+    }
+
+    public function savePhotoboothImage(Request $request)
     {
         try {
+            $userId = auth()->id();
             $image = $request->input('image');
             $image = str_replace('data:image/png;base64,', '', $image);
             $image = str_replace(' ', '+', $image);
-            
             $imageName = 'photobooth_' . time() . '.png';
-            Storage::disk('public')->put('photobooths/' . $imageName, base64_decode($image));
-
-            // Save to database
-            Photo::create([
-                'user_id' => auth()->id(),
-                'filename' => $imageName,
-                'path' => 'photobooths/' . $imageName,
-                'type' => 'photobooth'
-            ]);
+            
+            // Simpan di folder sesuai user ID
+            Storage::disk('public')->put("photobooth/{$userId}/" . $imageName, base64_decode($image));
 
             return response()->json([
                 'success' => true,
-                'image' => $imageName
+                'message' => 'Photo saved successfully',
+                'path' => "photobooth/{$userId}/" . $imageName
             ]);
         } catch (\Exception $e) {
-            Log::error('Error saving photobooth image: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save image'
+                'message' => 'Failed to save photo: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    public function photoboothGallery()
-    {
-        $photos = Photo::where('user_id', auth()->id())
-                       ->where('type', 'photobooth')
-                       ->orderBy('created_at', 'desc')
-                       ->get();
-        
-        return view('admin.photobooth-gallery', compact('photos'));
     }
 
     public function downloadPhoto(Photo $photo)
@@ -818,6 +809,32 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => 'Failed to delete photo'
             ], 500);
+        }
+    }
+
+    public function deletePhotoboothImage($photo)
+    {
+        try {
+            $userId = auth()->id();
+            // Pastikan foto berada di folder user yang benar
+            if (!Storage::disk('public')->exists("photobooth/{$userId}/" . $photo)) {
+                throw new \Exception('Photo not found or unauthorized');
+            }
+            
+            Storage::disk('public')->delete("photobooth/{$userId}/" . $photo);
+            return redirect()->route('admin.photobooth.gallery')->with('success', 'Photo deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.photobooth.gallery')->with('error', 'Failed to delete photo');
+        }
+    }
+
+    public function delete($photo)
+    {
+        try {
+            Storage::delete('public/photos/' . $photo);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 } 

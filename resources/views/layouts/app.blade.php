@@ -272,7 +272,13 @@
                             <i class="bi bi-images"></i>
                             <span>Gallery</span>
                         </a>
-                    </li>   
+                    </li>
+                    <li>
+                        <a href="{{ route('user.photobooth') }}" class="{{ request()->routeIs('user.photobooth*') ? 'active' : '' }}" data-title="Photo Booth">
+                            <i class="bi bi-camera"></i>
+                            <span>Photo Booth</span>
+                        </a>
+                    </li>
                     @endif
 
                     <!-- Common Menu Items -->
@@ -280,7 +286,9 @@
                         <span>Account</span>
                     </li>
                     <li>
-                        <a href="{{ route('admin.settings') }}" class="{{ request()->routeIs('admin.settings') ? 'active' : '' }}" data-title="Settings">
+                        <a href="{{ Auth::user()->role == 2 ? route('admin.settings') : route('user.settings') }}" 
+                           class="{{ request()->routeIs('admin.settings') || request()->routeIs('user.settings') ? 'active' : '' }}" 
+                           data-title="Settings">
                             <i class="bi bi-gear"></i>
                             <span>Settings</span>
                         </a>
